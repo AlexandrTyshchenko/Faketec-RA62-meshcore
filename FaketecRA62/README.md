@@ -2,7 +2,7 @@
 
 Прошивки MeshCore для **Faketec (ProMicro nRF52840)** з радіомодулем **HT-RA62 (SX1262)**, сенсорами, RTC та GPS із захистом від спуфінгу.
 
-Основа — гілка `dev` MeshCore (meshcore-dev/MeshCore, коміт `c4258a5b`) з усіма змінами FakeSolar, крім FakeSolar-специфічних (SX1268, канал батареї INA3221). Конфігурація збірки: [`variants/faketec_ra62/platformio.ini`](../variants/faketec_ra62/platformio.ini).
+Основа — гілка `dev` MeshCore (meshcore-dev/MeshCore, коміт `a4c66307`) з усіма змінами FakeSolar, крім FakeSolar-специфічних (SX1268, канал батареї INA3221). Конфігурація збірки: [`variants/faketec_ra62/platformio.ini`](../variants/faketec_ra62/platformio.ini).
 
 ## Залізо
 
@@ -62,8 +62,12 @@ get adc.multiplier
 | `gps period` | поточний інтервал у секундах | `> 1800` або `> 0 (continuous)` |
 | `gps period <час>` | інтервал вмикання: `30m`, `1h`, `600s`, `1d`; `0` = GPS працює постійно. Заодно вмикає GPS (зберігається) | `OK` |
 | `gps once` | позачергово знайти fix; `gps once -s` — ще й синхронізувати час | `OK - waking gps` |
+| `gps firstfix` | ліміт пошуку до першого fix після старту, у секундах | `> 3600` або `> 0 (no limit)` |
+| `gps firstfix <час>` | змінити цей ліміт: `45m`, `1h`, не більше `1d`; `0` = без ліміту (зберігається) | `OK` |
 | `gps sync` | синхронізувати годинник при наступному достовірному fix | `OK` |
 | `gps setloc` | записати поточну позицію GPS у `lat`/`lon` ноди | `OK` |
+
+Без fix GPS вимикається через 5 хв, а до першого fix після старту — через `gps firstfix` (1 год за замовчуванням). Fix 2D приймається як позиція, але GPS засинає лише після 3D (чекає до кінця вікна пошуку); fix 2D не замінює 3D, молодший за 5 хв.
 
 ### Діагностика
 
@@ -71,7 +75,7 @@ get adc.multiplier
 |---|---|
 | `gps fix` | останній fix: координати і кількість супутників |
 | `gps fix_stats` | час до fix: останній / максимальний; скільки спроб поспіль вдалося (`ok`) і не вдалося (`miss`) |
-| `gps diag` | живлення, байти UART, речення NMEA з правильною (`ok`) і хибною (`bad`) контрольною сумою, супутники. Якщо `bad` росте, а `ok` ні — модуль на іншій швидкості UART |
+| `gps diag` | живлення, байти UART, речення NMEA з правильною (`ok`) і хибною (`bad`) контрольною сумою, супутники, режим fix з GSA (`fm`: 1 — немає, 2 — 2D, 3 — 3D, 0 — невідомо). Якщо `bad` росте, а `ok` ні — модуль на іншій швидкості UART |
 
 ### Захист від спуфінгу
 
@@ -121,7 +125,7 @@ get adc.multiplier
 pio run -e Faketec_RA62_repeater -e Faketec_RA62_sensor -e Faketec_RA62_companion_radio_ble
 ```
 
-Debug-збірка з логами запуску: `Faketec_RA62_repeater_debug`. Усі зміни одним патчем: `faketec_ra62.patch` (відносно meshcore-dev/MeshCore `c4258a5b`).
+Debug-збірка з логами запуску: `Faketec_RA62_repeater_debug`. Усі зміни одним патчем: `faketec_ra62.patch` (відносно meshcore-dev/MeshCore `a4c66307`).
 
 ## Перевірено
 
